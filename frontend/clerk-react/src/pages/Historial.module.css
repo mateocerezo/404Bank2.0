@@ -1,0 +1,550 @@
+/* Historial como libro mayor: un día por tarjeta blanca, filas divididas por Línea (DESIGN.md).
+   Los tokens vienen de AppLayout (.page). */
+.wrapper {
+  /* Mismo margen que el topbar del shell, alineado a la izquierda con el título. */
+  padding: 28px var(--margen-lateral) 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* ── Filtros ── */
+.filtros {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.filaChips {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+/* "Filtros" solo aparece en celular, donde moneda y período van plegados. */
+.btnMasFiltros {
+  display: none;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btnMasFiltros[aria-expanded='true'] { border-color: var(--wine); color: var(--wine); }
+
+.filtrosSecundarios {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.chips,
+.segmento {
+  display: inline-flex;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(26, 21, 18, 0.06);
+  max-width: 100%;
+}
+
+.chips {
+  align-self: flex-start;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.chips::-webkit-scrollbar { display: none; }
+
+.chip,
+.segmentoBoton {
+  flex-shrink: 0;
+  min-height: 36px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted-text);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.chip:hover,
+.segmentoBoton:hover { color: var(--ink); }
+
+.chip[aria-pressed='true'],
+.segmentoBoton[aria-pressed='true'] {
+  background: var(--card);
+  color: var(--wine-dark);
+  font-weight: 800;
+  box-shadow: 0 1px 4px rgba(26, 21, 18, 0.12);
+}
+
+.segmentoBoton { min-height: 32px; padding: 0 13px; font-size: 14.5px; }
+
+.quitarFiltros {
+  min-height: 40px;
+  padding: 0 6px;
+  border: 0;
+  background: transparent;
+  color: var(--wine);
+  font-family: inherit;
+  font-size: 14.5px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+/* ── Resumen del período: una línea de libro mayor, no una tarjeta de métricas ── */
+.resumen {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 4px 16px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.resumenTitulo {
+  margin: 0;
+  font-size: 14.5px;
+  font-weight: 800;
+  letter-spacing: 0;
+  color: var(--muted-text);
+}
+
+.resumenFilas {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.resumenFila {
+  display: grid;
+  grid-template-columns: 1fr minmax(170px, auto) minmax(170px, auto);
+  align-items: baseline;
+  gap: 4px 36px;
+}
+
+.resumenMoneda {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.resumenCifra {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 8px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.resumenCero { color: var(--muted); }
+
+.resumenEtiqueta {
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--muted-text);
+}
+
+.resumenNota {
+  margin: 4px 0 0;
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--muted-text);
+}
+
+.btnTexto {
+  min-height: 36px;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  color: var(--wine);
+  font-family: inherit;
+  font-size: 14.5px;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+/* ── Días ── */
+.dia {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.diaTitulo {
+  letter-spacing: 0;
+  margin: 0;
+  padding-left: 4px;
+  font-size: 14.5px;
+  font-weight: 800;
+  color: var(--muted-text);
+}
+
+.diaTitulo::first-letter { text-transform: uppercase; }
+
+.libro {
+  margin: 0;
+  padding: 6px 12px;
+  list-style: none;
+  background: var(--card);
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+}
+
+.item + .item { border-top: 1px solid var(--line); }
+
+.fila {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 8px;
+  margin: 2px 0;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.fila:hover,
+.fila[aria-expanded='true'] { background: var(--paper); }
+
+.icono {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.iconoEntrante { background: var(--green-tint); color: var(--green); }
+.iconoSaliente { background: rgba(26, 21, 18, 0.06); color: var(--muted-text); }
+
+.montos {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.titulo {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.meta {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--muted-text);
+}
+
+.monto {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 16.5px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.montoEntrante { color: var(--green); }
+
+/* El otro lado de una compra/venta de dólares: lo que pagaste, más chico y en tinta suave. */
+.montoSecundario {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted-text);
+  white-space: nowrap;
+}
+
+.chevron {
+  display: flex;
+  color: var(--muted);
+  transition: transform 0.2s ease;
+}
+
+.chevronAbierto { transform: rotate(180deg); }
+
+/* ── Detalle desplegado ── */
+.detalle {
+  padding: 4px 8px 16px 62px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.datos {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 20px;
+}
+
+.datos div { min-width: 0; }
+.datos .datoAncho { grid-column: 1 / -1; }
+
+.datos dt {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--muted-text);
+}
+
+.datos dd {
+  margin: 2px 0 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.cifra {
+  font-family: 'Space Grotesk', sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+
+/* CBU en píldora, como en Perfil, con su botón de copiar. */
+.cbu {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+}
+
+.pill {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--paper);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.btnCopiar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--wine);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btnCopiar:hover { border-color: var(--wine); }
+
+.notaDetalle {
+  margin: 0;
+  max-width: 62ch;
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--muted-text);
+}
+
+.cargarMas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+}
+
+.errorDescarga {
+  margin: 0;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--red);
+}
+
+/* ── Estados ── */
+.btnSecundario {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 0 16px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.btnSecundario:hover:not(:disabled) { border-color: var(--wine); color: var(--wine); }
+.btnSecundario:disabled { opacity: 0.65; cursor: wait; }
+
+.aviso,
+.vacio {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  padding: 18px 20px;
+  border-radius: 22px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.aviso p,
+.vacio p { margin: 0; flex: 1 1 260px; }
+
+.aviso { background: var(--red-tint); color: var(--red); }
+.vacio { background: var(--card); box-shadow: var(--shadow); color: var(--muted-text); }
+
+.nota {
+  margin: 0;
+  padding-left: 4px;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--muted-text);
+}
+
+.esqueletoFila {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 15px 8px;
+}
+
+.esqueletoFila + .esqueletoFila { border-top: 1px solid var(--line); }
+
+.esqueletoIcono,
+.esqueletoLinea {
+  background: rgba(26, 21, 18, 0.06);
+  animation: pulso 1.4s ease-in-out infinite;
+}
+
+.esqueletoIcono { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; }
+.esqueletoTexto { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.esqueletoLinea { display: block; height: 11px; width: 55%; border-radius: 6px; }
+.esqueletoCorta { width: 30%; }
+.esqueletoMonto { width: 84px; flex-shrink: 0; }
+
+@keyframes pulso {
+  50% { opacity: 0.45; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .esqueletoIcono,
+  .esqueletoLinea { animation: none; }
+  .chevron { transition: none; }
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 980px) {
+  .wrapper { padding: 24px 20px 48px; }
+}
+
+@media (max-width: 640px) {
+  .wrapper { padding: 20px 20px 40px; }
+  .libro { padding: 4px 6px; }
+  .fila { gap: 12px; padding: 12px 6px; }
+  .chevron svg { width: 14px; height: 14px; }
+  .detalle { padding: 2px 6px 16px; }
+  .datos { grid-template-columns: 1fr; }
+  .segmento { flex: 1 1 auto; }
+  .segmentoBoton { flex: 1; padding: 0 10px; }
+
+  /* Categorías deslizables: el borde derecho se desvanece para avisar que hay más. */
+  .filaChips .chips {
+    flex: 1 1 auto;
+    min-width: 0;
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent);
+    mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent);
+    padding-right: 24px;
+  }
+  .btnMasFiltros { display: inline-flex; }
+  .secundariosPlegados { display: none; }
+
+  .resumenFila { grid-template-columns: 1fr 1fr; gap: 2px 16px; }
+  .resumenMoneda { grid-column: 1 / -1; margin-top: 4px; }
+  .resumenCifra { flex-direction: column; align-items: flex-start; gap: 0; font-size: 16.5px; }
+
+  /* Filas más compactas: la meta en una línea (el detalle tiene todo completo). */
+  .meta { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .monto { font-size: 15.5px; }
+  .montoSecundario { font-size: 13.5px; }
+}

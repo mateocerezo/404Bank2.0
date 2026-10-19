@@ -12,7 +12,11 @@ CREATE TABLE Personas (
 	Direccion VARCHAR(255) UNIQUE,
 	Email VARCHAR(255),
 	Telefono VARCHAR(255),
-	FechaNac DATE
+	FechaNac DATE,
+	ciudad VARCHAR(255),
+	provincia VARCHAR(255),
+	pais VARCHAR(255),
+	codigo_postal VARCHAR(20)
 );
 
 CREATE TABLE Roles (
@@ -31,18 +35,6 @@ CREATE TABLE Permisos (
 	descripcion VARCHAR(255)
 );
 
-CREATE TABLE Tipo_Cuentas (
-	id SERIAL PRIMARY KEY,
-	nombre VARCHAR(255),
-	descripcion VARCHAR(255)
-);
-
-CREATE TABLE Monedas (
-	id SERIAL PRIMARY KEY,
-	nombre VARCHAR(255),
-	simbolo VARCHAR(255),
-	codigo_iso VARCHAR(255)
-);
 
 CREATE TABLE Estado_Transaccion (
 	id_estado SERIAL PRIMARY KEY,
@@ -63,11 +55,10 @@ CREATE TABLE Tipo_Evento (
 -- 3. CREACIÓN DE TABLAS CON DEPENDENCIAS (Cuentas, Transacciones, Seguridad)
 CREATE TABLE Cuentas_Bancarias (
 	id_cuenta SERIAL PRIMARY KEY,
-	id_tipo_cuenta INTEGER REFERENCES Tipo_Cuentas(id),
-	id_moneda INTEGER REFERENCES Monedas(id),
 	cbu VARCHAR(22),
 	alias VARCHAR(255),
 	saldo DECIMAL(15, 2),
+	moneda VARCHAR(3) DEFAULT 'ARS',
 	fecha_apertura DATE,
 	estado estado_cuenta
 );
@@ -79,7 +70,6 @@ CREATE TABLE Transacciones (
 	id_tipo_transaccion INTEGER REFERENCES Tipo_Transaccion(id),
 	id_estado INTEGER REFERENCES Estado_Transaccion(id_estado),
 	monto DECIMAL(15, 2),
-	id_moneda INTEGER REFERENCES Monedas(id),
 	descripcion_user VARCHAR(30),
 	codigo_operacion VARCHAR(255) UNIQUE,
 	fecha_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -139,6 +129,19 @@ CREATE TABLE Sesiones (
 	ip_acceso VARCHAR(45),
 	dispositivo VARCHAR(100),
 	revocada BOOLEAN
+);
+
+-- Tabla para registrar transferencias interbancarias (Banco Central)
+CREATE TABLE Transferencias_Central (
+	id SERIAL PRIMARY KEY,
+	transaccion_central_id VARCHAR(255) UNIQUE NOT NULL,
+	cbu_origen VARCHAR(22) NOT NULL,
+	cbu_destino VARCHAR(22) NOT NULL,
+	importe DECIMAL(15, 2) NOT NULL,
+	estado VARCHAR(20) NOT NULL,
+	tipo VARCHAR(10) NOT NULL CHECK (tipo IN ('saliente', 'entrante', 'COMPRA_USD', 'VENTA_USD')),
+	fecha_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	moneda VARCHAR(3) NOT NULL DEFAULT 'ARS' CHECK (moneda IN ('ARS', 'USD'))
 );
 
 -- 4. TABLAS INTERMEDIAS (Con Claves Foráneas y Primarias Compuestas)

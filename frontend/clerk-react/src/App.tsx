@@ -1,19 +1,51 @@
-import './App.css'
-import { Show, SignInButton, SignUpButton, UserButton } from '@clerk/react'
+import './App.css';
+import Login from './pages/Login';
+import Landing from './pages/Landing';
+import { Routes, Route, Navigate } from 'react-router-dom'
+import Register from './pages/Registro';
+import PrivateRoute from './components/ProtectRouter'
+import Home from './pages/home'
+import Onboarding from './pages/Onboarding'
+import OnboardingGuard from './components/OnboardingGuard'
+import Transferir from './pages/Transferir';
+import Historial from './pages/Historial';
+import RoleGuard from './components/RoleGuard';
+import Admin from './pages/Admin';
+import Empleado from './pages/Empleado';
+import Gerente from './pages/Gerente';
+import Prestamos from './pages/Prestamos';
+import Tarjetas from './pages/Tarjetas';
+import Perfil from './pages/Perfil';
+import Chat from './pages/Chat';
+import Inversiones from './pages/Inversiones';
+import { ViewModeProvider } from './context/ViewModeContext';
+
+
 
 function App() {
   return (
-    <>
-      <header>
-        <Show when="signed-out">
-          <SignInButton />
-          <SignUpButton />
-        </Show>
-        <Show when="signed-in">
-          <UserButton />
-        </Show>
-      </header>
-    </>
+    <ViewModeProvider>
+      <Routes>
+        <Route path="/login/*" element={<Login />} />
+        <Route path="/register/*" element={<Register />} />
+        <Route path="/onboarding" element={<PrivateRoute><OnboardingGuard key="onboarding" onlyIncomplete><Onboarding /></OnboardingGuard></PrivateRoute>} />
+        <Route path="/home" element={<PrivateRoute><OnboardingGuard><Home /></OnboardingGuard></PrivateRoute>} />
+        <Route path="/transferir" element={<PrivateRoute><OnboardingGuard><Transferir /></OnboardingGuard></PrivateRoute>} />
+        <Route path="/historial" element={<PrivateRoute><OnboardingGuard><Historial /></OnboardingGuard></PrivateRoute>} />
+        <Route path="/prestamos" element={<PrivateRoute><OnboardingGuard><Prestamos /></OnboardingGuard></PrivateRoute>} />
+<Route path="/tarjetas" element={<PrivateRoute><OnboardingGuard><Tarjetas /></OnboardingGuard></PrivateRoute>} />
+        <Route path="/perfil" element={<PrivateRoute><OnboardingGuard><Perfil /></OnboardingGuard></PrivateRoute>} />
+        <Route path="/chat" element={<PrivateRoute><OnboardingGuard><Chat /></OnboardingGuard></PrivateRoute>} />
+        <Route path="/inversiones" element={<PrivateRoute><OnboardingGuard><Inversiones /></OnboardingGuard></PrivateRoute>} />
+        {/* Los comprobantes se descargan desde cada transferencia en Historial; la ruta vieja redirige ahí. */}
+        <Route path="/comprobantes" element={<Navigate to="/historial" replace />} />
+        <Route path="/admin" element={<PrivateRoute><RoleGuard role="admin"><Admin /></RoleGuard></PrivateRoute>} />
+        <Route path="/empleado" element={<PrivateRoute><RoleGuard role="empleado"><Empleado /></RoleGuard></PrivateRoute>} />
+        <Route path="/gerente" element={<PrivateRoute><RoleGuard role="gerente"><Gerente /></RoleGuard></PrivateRoute>} />
+        <Route path="/" element={<Landing />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    </ViewModeProvider>
   )
 }
 
